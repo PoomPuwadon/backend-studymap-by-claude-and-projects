@@ -1,9 +1,9 @@
 {
-  "title": "Backend track",
+  "title": "Backend track (ขอบคุณครับ claude)",
   "subtitle": "Zero to contributing on a production Go service. Nine tiers, in order — each assumes the last is finished.",
   "target": {
     "heading": "What this is aimed at",
-    "body": "A live Go API of roughly 7,700 lines across 60 files, organised by domain, built by a team. Nothing here is filler — every tier maps to something that service does.",
+    "body": "A project with live Go API. Nothing here is filler — every tier maps to something that service does.",
     "specs": [
       "Go",
       "Fiber",
