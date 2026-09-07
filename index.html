@@ -235,7 +235,7 @@ function buildBarSvg(){
   const font = "IBM Plex Mono, ui-monospace, SFMono-Regular, Menlo, monospace";
   return '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '" role="img" aria-label="Progress ' + pct + '%">' +
     '<rect width="' + w + '" height="' + h + '" fill="#E9ECF0"/>' +
-    '<text x="' + pad + '" y="24" font-family="' + font + '" font-size="14" font-weight="600" fill="#16202C">backend track — ' + pct + '%</text>' +
+    '<text x="' + pad + '" y="24" font-family="' + font + '" font-size="14" font-weight="600" fill="#16202C">progress — ' + pct + '%</text>' +
     '<text x="' + (w - pad) + '" y="24" font-family="' + font + '" font-size="12" fill="#5C6A7A" text-anchor="end">' + d + '/' + n + ' tasks</text>' +
     '<rect x="' + pad + '" y="' + trackY + '" width="' + (w - pad * 2) + '" height="' + trackH + '" fill="#DCE2E8"/>' +
     '<rect x="' + pad + '" y="' + trackY + '" width="' + barW + '" height="' + trackH + '" fill="#C77A1E"/>' +
