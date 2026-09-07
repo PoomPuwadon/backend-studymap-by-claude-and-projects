@@ -133,6 +133,7 @@ const TOKEN_KEY = "bt_token";
 let CUR = null;                 // curriculum
 let ST  = { done:{}, projects:{} };
 let SHA = null;                 // sha of progress.json
+let SVG_SHA = null;              // sha of progress-bar.svg
 let token = null;
 let dirty = false;
 let openTiers = new Set();
@@ -208,46 +209,70 @@ async function boot(){
   token = localStorage.getItem(TOKEN_KEY);
   openTiers.add(current());
   render();
-  if (token) fetchSha();
+  if (token) fetchShas();
 }
 
-async function fetchSha(){
+async function fetchFileSha(path){
+  const r = await fetch(`${API}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}?ref=${BRANCH}`,
+    { headers:{ Authorization:"Bearer " + token, Accept:"application/vnd.github+json" } });
+  if (r.ok) { const j = await r.json(); return j.sha; }
+  if (r.status === 401) { signOut(); toast("Token rejected — signed out"); }
+  return null; // 404 (file doesn't exist yet) or offline: creation/retry handles it
+}
+
+async function fetchShas(){
   try {
-    const r = await fetch(`${API}/repos/${REPO_OWNER}/${REPO_NAME}/contents/progress.json?ref=${BRANCH}`,
-      { headers:{ Authorization:"Bearer " + token, Accept:"application/vnd.github+json" } });
-    if (r.ok) { const j = await r.json(); SHA = j.sha; }
-    else if (r.status === 401) { signOut(); toast("Token rejected — signed out"); }
+    SHA = await fetchFileSha("progress.json");
+    SVG_SHA = await fetchFileSha("progress-bar.svg");
   } catch(e){ /* offline: save will retry */ }
 }
 
+/* ---------- progress bar svg ---------- */
+function buildBarSvg(){
+  const d = allDone(), n = allTasks(), pct = n ? Math.round(d / n * 100) : 0;
+  const w = 760, h = 60, pad = 20, trackY = 38, trackH = 10;
+  const barW = Math.round((w - pad * 2) * pct / 100);
+  const font = "IBM Plex Mono, ui-monospace, SFMono-Regular, Menlo, monospace";
+  return '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '" role="img" aria-label="Progress ' + pct + '%">' +
+    '<rect width="' + w + '" height="' + h + '" fill="#E9ECF0"/>' +
+    '<text x="' + pad + '" y="24" font-family="' + font + '" font-size="14" font-weight="600" fill="#16202C">backend track — ' + pct + '%</text>' +
+    '<text x="' + (w - pad) + '" y="24" font-family="' + font + '" font-size="12" fill="#5C6A7A" text-anchor="end">' + d + '/' + n + ' tasks</text>' +
+    '<rect x="' + pad + '" y="' + trackY + '" width="' + (w - pad * 2) + '" height="' + trackH + '" fill="#DCE2E8"/>' +
+    '<rect x="' + pad + '" y="' + trackY + '" width="' + barW + '" height="' + trackH + '" fill="#C77A1E"/>' +
+    "</svg>";
+}
+
 /* ---------- save ---------- */
+async function commitFile(path, content, sha, message){
+  const body = { message, content: b64(content), branch: BRANCH };
+  if (sha) body.sha = sha;
+  const put = () => fetch(`${API}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, {
+    method:"PUT",
+    headers:{ Authorization:"Bearer " + token, Accept:"application/vnd.github+json", "Content-Type":"application/json" },
+    body: JSON.stringify(body)
+  });
+  let r = await put();
+  if (r.status === 409 || r.status === 422) {
+    body.sha = await fetchFileSha(path);
+    r = await put();
+  }
+  if (!r.ok) {
+    const j = await r.json().catch(() => ({}));
+    throw new Error(j.message || ("HTTP " + r.status));
+  }
+  const j = await r.json();
+  return j.content && j.content.sha;
+}
+
 async function save(){
   if (!token) return;
   const btn = $("#save"); if (btn) { btn.disabled = true; btn.textContent = "Saving…"; }
-  const body = {
-    message: "progress: " + allDone() + "/" + allTasks(),
-    content: b64(JSON.stringify({ done:ST.done, projects:ST.projects, updated:new Date().toISOString() }, null, 2) + "\n"),
-    branch: BRANCH
-  };
-  if (SHA) body.sha = SHA;
+  const message = "progress: " + allDone() + "/" + allTasks();
   try {
-    let r = await fetch(`${API}/repos/${REPO_OWNER}/${REPO_NAME}/contents/progress.json`, {
-      method:"PUT",
-      headers:{ Authorization:"Bearer " + token, Accept:"application/vnd.github+json", "Content-Type":"application/json" },
-      body: JSON.stringify(body)
-    });
-    if (r.status === 409 || r.status === 422) { await fetchSha(); body.sha = SHA;
-      r = await fetch(`${API}/repos/${REPO_OWNER}/${REPO_NAME}/contents/progress.json`, {
-        method:"PUT",
-        headers:{ Authorization:"Bearer " + token, Accept:"application/vnd.github+json", "Content-Type":"application/json" },
-        body: JSON.stringify(body) });
-    }
-    if (!r.ok) {
-      const j = await r.json().catch(() => ({}));
-      throw new Error(j.message || ("HTTP " + r.status));
-    }
-    const j = await r.json();
-    SHA = j.content && j.content.sha;
+    SHA = await commitFile("progress.json",
+      JSON.stringify({ done:ST.done, projects:ST.projects, updated:new Date().toISOString() }, null, 2) + "\n",
+      SHA, message);
+    SVG_SHA = await commitFile("progress-bar.svg", buildBarSvg(), SVG_SHA, message);
     dirty = false; render();
     toast("Committed");
   } catch (e) {
@@ -269,7 +294,7 @@ async function signIn(value){
     dialog = false; render(); fetchSha(); toast("Signed in");
   } catch (e) { dialogErr = "Network error."; render(); }
 }
-function signOut(){ token = null; SHA = null; dirty = false; localStorage.removeItem(TOKEN_KEY); render(); }
+function signOut(){ token = null; SHA = null; SVG_SHA = null; dirty = false; localStorage.removeItem(TOKEN_KEY); render(); }
 
 /* ---------- render ---------- */
 function artifact(d){

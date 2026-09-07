@@ -1,6 +1,8 @@
 # Backend Study Map and Projects
 *(study map by claude)*
 
+![progress](progress-bar.svg)
+
 ## Purpose and approach
 as a viewer, you are able to track my progress towards a **self-made-no-ai fully functional large live go api project**
 
