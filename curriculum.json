@@ -1,0 +1,714 @@
+{
+  "title": "Backend track",
+  "subtitle": "Zero to contributing on a production Go service. Nine tiers, in order — each assumes the last is finished.",
+  "target": {
+    "heading": "What this is aimed at",
+    "body": "A live Go API of roughly 7,700 lines across 60 files, organised by domain, built by a team. Nothing here is filler — every tier maps to something that service does.",
+    "specs": [
+      "Go",
+      "Fiber",
+      "GORM",
+      "PostgreSQL",
+      "Redis",
+      "JWT",
+      "Structured logging",
+      "Swagger",
+      "Docker",
+      "CI"
+    ]
+  },
+  "tiers": [
+    {
+      "id": "t0",
+      "name": "Ground floor",
+      "goal": "Command line, Git, and enough JavaScript to stop guessing.",
+      "proof": "You can create a repo, make three commits, and push it without looking anything up.",
+      "modules": [
+        {
+          "id": "t0.m0",
+          "name": "Environment",
+          "tasks": [
+            {
+              "id": "t0.m0.k0",
+              "text": "Navigate, move and delete files from the terminal"
+            },
+            {
+              "id": "t0.m0.k1",
+              "text": "Install Node and run a .js file from the command line"
+            },
+            {
+              "id": "t0.m0.k2",
+              "text": "Install a package with npm"
+            }
+          ]
+        },
+        {
+          "id": "t0.m1",
+          "name": "Version control",
+          "tasks": [
+            {
+              "id": "t0.m1.k0",
+              "text": "git init, add, commit, push to a remote you created"
+            },
+            {
+              "id": "t0.m1.k1",
+              "text": "Branch, change, merge back"
+            }
+          ]
+        },
+        {
+          "id": "t0.m2",
+          "name": "JavaScript",
+          "tasks": [
+            {
+              "id": "t0.m2.k0",
+              "text": "Values, functions, arrays, objects, loops"
+            },
+            {
+              "id": "t0.m2.k1",
+              "text": "map, filter, find, reduce"
+            },
+            {
+              "id": "t0.m2.k2",
+              "text": "JSON and how to parse it"
+            },
+            {
+              "id": "t0.m2.k3",
+              "text": "Callbacks, promises, async/await"
+            },
+            {
+              "id": "t0.m2.k4",
+              "text": "Explain why await inside forEach does not work"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "t1",
+      "name": "First server",
+      "goal": "How the web talks, and a server you wrote answering it.",
+      "proof": "Four endpoints you can hit from the browser and from curl.",
+      "modules": [
+        {
+          "id": "t1.m0",
+          "name": "The protocol",
+          "tasks": [
+            {
+              "id": "t1.m0.k0",
+              "text": "GET, POST, PATCH, PUT, DELETE and what each means"
+            },
+            {
+              "id": "t1.m0.k1",
+              "text": "Status codes you'll actually use"
+            },
+            {
+              "id": "t1.m0.k2",
+              "text": "Headers and bodies — inspect a real request"
+            },
+            {
+              "id": "t1.m0.k3",
+              "text": "What stateless means and why it matters"
+            }
+          ]
+        },
+        {
+          "id": "t1.m1",
+          "name": "Your first API",
+          "tasks": [
+            {
+              "id": "t1.m1.k0",
+              "text": "Serve GET /hello returning JSON"
+            },
+            {
+              "id": "t1.m1.k1",
+              "text": "POST that accepts a body and echoes it"
+            },
+            {
+              "id": "t1.m1.k2",
+              "text": "A route with a URL parameter"
+            },
+            {
+              "id": "t1.m1.k3",
+              "text": "Correct status codes for bad input"
+            },
+            {
+              "id": "t1.m1.k4",
+              "text": "Hit every endpoint with curl, not just the browser"
+            }
+          ],
+          "deliverable": {
+            "id": "b1",
+            "label": "First server"
+          }
+        }
+      ]
+    },
+    {
+      "id": "t2",
+      "name": "Typed and structured",
+      "goal": "TypeScript, and code split into layers instead of one long file.",
+      "proof": "No route handler longer than fifteen lines, and logic lives outside the handler.",
+      "modules": [
+        {
+          "id": "t2.m0",
+          "name": "TypeScript",
+          "tasks": [
+            {
+              "id": "t2.m0.k0",
+              "text": "tsconfig and a working build"
+            },
+            {
+              "id": "t2.m0.k1",
+              "text": "Type annotations, interfaces, unions, optional fields"
+            },
+            {
+              "id": "t2.m0.k2",
+              "text": "Generics — enough to read them, not to write them"
+            },
+            {
+              "id": "t2.m0.k3",
+              "text": "Read a signature you didn't write and know what it wants"
+            }
+          ]
+        },
+        {
+          "id": "t2.m1",
+          "name": "Structure",
+          "tasks": [
+            {
+              "id": "t2.m1.k0",
+              "text": "Type every request and response"
+            },
+            {
+              "id": "t2.m1.k1",
+              "text": "Split routes, logic, and data access"
+            },
+            {
+              "id": "t2.m1.k2",
+              "text": "Validate input and reject it properly"
+            },
+            {
+              "id": "t2.m1.k3",
+              "text": "One consistent error shape"
+            },
+            {
+              "id": "t2.m1.k4",
+              "text": "Config from environment, never in code"
+            }
+          ],
+          "deliverable": {
+            "id": "b2",
+            "label": "Typed API"
+          }
+        }
+      ]
+    },
+    {
+      "id": "t3",
+      "name": "Real data",
+      "goal": "Design a data model, then PostgreSQL, SQL by hand, and schema changes under version control.",
+      "proof": "A schema you designed and can defend, a join you wrote unaided, and a balance two simultaneous requests cannot double-spend.",
+      "modules": [
+        {
+          "id": "t3.m0",
+          "name": "Designing the model",
+          "tasks": [
+            {
+              "id": "t3.m0.k0",
+              "text": "Take a real system and list its entities before writing any SQL"
+            },
+            {
+              "id": "t3.m0.k1",
+              "text": "Decide what is a table, what is a column, what is a relationship"
+            },
+            {
+              "id": "t3.m0.k2",
+              "text": "Normalize it, then say out loud where you'd denormalize and why"
+            },
+            {
+              "id": "t3.m0.k3",
+              "text": "Choose primary keys and defend serial vs uuid for this case"
+            },
+            {
+              "id": "t3.m0.k4",
+              "text": "Design the API resources over that schema — paths, methods, shapes"
+            },
+            {
+              "id": "t3.m0.k5",
+              "text": "Write down three decisions you made and the alternative you rejected"
+            }
+          ]
+        },
+        {
+          "id": "t3.m1",
+          "name": "SQL",
+          "tasks": [
+            {
+              "id": "t3.m1.k0",
+              "text": "Install Postgres and connect with psql"
+            },
+            {
+              "id": "t3.m1.k1",
+              "text": "CREATE TABLE with real types and constraints"
+            },
+            {
+              "id": "t3.m1.k2",
+              "text": "INSERT, SELECT, UPDATE, DELETE by hand"
+            },
+            {
+              "id": "t3.m1.k3",
+              "text": "WHERE, ORDER BY, LIMIT, GROUP BY"
+            }
+          ]
+        },
+        {
+          "id": "t3.m2",
+          "name": "Relationships",
+          "tasks": [
+            {
+              "id": "t3.m2.k0",
+              "text": "Foreign keys and one-to-many"
+            },
+            {
+              "id": "t3.m2.k1",
+              "text": "Inner and left joins, and when you need which"
+            },
+            {
+              "id": "t3.m2.k2",
+              "text": "Indexes and when to add one"
+            }
+          ]
+        },
+        {
+          "id": "t3.m3",
+          "name": "Concurrency",
+          "tasks": [
+            {
+              "id": "t3.m3.k0",
+              "text": "Transactions, and rolling back when step two fails"
+            },
+            {
+              "id": "t3.m3.k1",
+              "text": "What happens when two requests read the same row"
+            },
+            {
+              "id": "t3.m3.k2",
+              "text": "SELECT ... FOR UPDATE and what it costs"
+            },
+            {
+              "id": "t3.m3.k3",
+              "text": "Optimistic concurrency with version columns"
+            },
+            {
+              "id": "t3.m3.k4",
+              "text": "Isolation levels and when they matter"
+            }
+          ]
+        },
+        {
+          "id": "t3.m4",
+          "name": "Schema over time",
+          "tasks": [
+            {
+              "id": "t3.m4.k0",
+              "text": "Migrations in version control"
+            },
+            {
+              "id": "t3.m4.k1",
+              "text": "Replace all in-memory data with Postgres"
+            }
+          ],
+          "deliverable": {
+            "id": "b3",
+            "label": "Schema + API"
+          }
+        }
+      ]
+    },
+    {
+      "id": "t4",
+      "name": "Who are you",
+      "goal": "Authentication, authorization, and the gap between them.",
+      "proof": "Two users log in and neither can read or modify the other's data.",
+      "modules": [
+        {
+          "id": "t4.m0",
+          "name": "Sessions",
+          "tasks": [
+            {
+              "id": "t4.m0.k0",
+              "text": "Hash passwords with bcrypt or argon2"
+            },
+            {
+              "id": "t4.m0.k1",
+              "text": "Issue a JWT and verify it"
+            },
+            {
+              "id": "t4.m0.k2",
+              "text": "Access tokens vs refresh tokens"
+            },
+            {
+              "id": "t4.m0.k3",
+              "text": "Middleware rejecting unauthenticated requests"
+            }
+          ]
+        },
+        {
+          "id": "t4.m1",
+          "name": "Permissions",
+          "tasks": [
+            {
+              "id": "t4.m1.k0",
+              "text": "Check the caller owns what they're touching"
+            },
+            {
+              "id": "t4.m1.k1",
+              "text": "Roles, and admin-only routes"
+            },
+            {
+              "id": "t4.m1.k2",
+              "text": "Try to break your own auth with someone else's ID"
+            }
+          ]
+        },
+        {
+          "id": "t4.m2",
+          "name": "Federated identity",
+          "tasks": [
+            {
+              "id": "t4.m2.k0",
+              "text": "OAuth2 authorization code flow and PKCE"
+            },
+            {
+              "id": "t4.m2.k1",
+              "text": "OIDC: ID tokens and how SSO works"
+            },
+            {
+              "id": "t4.m2.k2",
+              "text": "Log into a dummy app with a real provider"
+            },
+            {
+              "id": "t4.m2.k3",
+              "text": "Redirect allowlisting"
+            },
+            {
+              "id": "t4.m2.k4",
+              "text": "Keep tokens server-side, not in the browser"
+            }
+          ],
+          "deliverable": {
+            "id": "b4",
+            "label": "Auth demo"
+          }
+        }
+      ]
+    },
+    {
+      "id": "t5",
+      "name": "Shipped",
+      "goal": "It runs on someone else's machine, and tests gate the merge.",
+      "proof": "A stranger clones the repo, runs one command, and has it working.",
+      "modules": [
+        {
+          "id": "t5.m0",
+          "name": "Containers",
+          "tasks": [
+            {
+              "id": "t5.m0.k0",
+              "text": "A Dockerfile for your API"
+            },
+            {
+              "id": "t5.m0.k1",
+              "text": "compose bringing up API and Postgres together"
+            },
+            {
+              "id": "t5.m0.k2",
+              "text": "Images vs containers vs volumes"
+            }
+          ]
+        },
+        {
+          "id": "t5.m1",
+          "name": "Automation",
+          "tasks": [
+            {
+              "id": "t5.m1.k0",
+              "text": "Tests for your business logic"
+            },
+            {
+              "id": "t5.m1.k1",
+              "text": "CI running lint and tests on every push"
+            },
+            {
+              "id": "t5.m1.k2",
+              "text": "Deployed at a real URL"
+            },
+            {
+              "id": "t5.m1.k3",
+              "text": "A README explaining setup and decisions"
+            }
+          ],
+          "deliverable": {
+            "id": "b5",
+            "label": "Deployed service"
+          }
+        }
+      ]
+    },
+    {
+      "id": "t6",
+      "name": "Go",
+      "goal": "A second language, chosen because the target is written in it.",
+      "proof": "You can read unfamiliar Go and say what it does.",
+      "modules": [
+        {
+          "id": "t6.m0",
+          "name": "The language",
+          "tasks": [
+            {
+              "id": "t6.m0.k0",
+              "text": "A Tour of Go, all of it"
+            },
+            {
+              "id": "t6.m0.k1",
+              "text": "Structs, methods, pointers"
+            },
+            {
+              "id": "t6.m0.k2",
+              "text": "Interfaces — implicit, and why that changes design"
+            },
+            {
+              "id": "t6.m0.k3",
+              "text": "Errors as values, not exceptions"
+            }
+          ]
+        },
+        {
+          "id": "t6.m1",
+          "name": "The toolchain",
+          "tasks": [
+            {
+              "id": "t6.m1.k0",
+              "text": "Goroutines and channels, basics only"
+            },
+            {
+              "id": "t6.m1.k1",
+              "text": "Packages, modules, go.mod"
+            },
+            {
+              "id": "t6.m1.k2",
+              "text": "Write and run a test"
+            },
+            {
+              "id": "t6.m1.k3",
+              "text": "Rewrite /hello in Go"
+            }
+          ],
+          "deliverable": {
+            "id": "b6",
+            "label": "Go rewrite"
+          }
+        }
+      ]
+    },
+    {
+      "id": "t7",
+      "name": "A service, properly built",
+      "goal": "Everything above, in Go, structured the way the target is.",
+      "proof": "Layered, migrated, containerized, deployed — and your business logic does not import your web framework.",
+      "modules": [
+        {
+          "id": "t7.m0",
+          "name": "Architecture",
+          "tasks": [
+            {
+              "id": "t7.m0.k0",
+              "text": "Route with Fiber or Gin"
+            },
+            {
+              "id": "t7.m0.k1",
+              "text": "handler → usecase → repository, no shortcuts"
+            },
+            {
+              "id": "t7.m0.k2",
+              "text": "Each layer's contract as an interface"
+            },
+            {
+              "id": "t7.m0.k3",
+              "text": "Ports and adapters: name it, then see it in your own code"
+            },
+            {
+              "id": "t7.m0.k4",
+              "text": "Constructor injection, never construct inside"
+            },
+            {
+              "id": "t7.m0.k5",
+              "text": "cmd/ and internal/ layout"
+            }
+          ]
+        },
+        {
+          "id": "t7.m1",
+          "name": "Testing",
+          "tasks": [
+            {
+              "id": "t7.m1.k0",
+              "text": "A mock repository injected into a usecase test"
+            },
+            {
+              "id": "t7.m1.k1",
+              "text": "Table-driven tests for business rules"
+            },
+            {
+              "id": "t7.m1.k2",
+              "text": "Tests that pass with no database running"
+            },
+            {
+              "id": "t7.m1.k3",
+              "text": "Swap one adapter without touching a usecase"
+            }
+          ]
+        },
+        {
+          "id": "t7.m2",
+          "name": "Production concerns",
+          "tasks": [
+            {
+              "id": "t7.m2.k0",
+              "text": "An ORM talking to Postgres"
+            },
+            {
+              "id": "t7.m2.k1",
+              "text": "Migrations under version control"
+            },
+            {
+              "id": "t7.m2.k2",
+              "text": "A multi-step write that cannot half-complete"
+            },
+            {
+              "id": "t7.m2.k3",
+              "text": "JWT auth with real ownership checks"
+            },
+            {
+              "id": "t7.m2.k4",
+              "text": "Structured logging, not fmt.Println"
+            },
+            {
+              "id": "t7.m2.k5",
+              "text": "Generated API docs"
+            },
+            {
+              "id": "t7.m2.k6",
+              "text": "Dockerfile, compose, CI, deployed"
+            }
+          ]
+        },
+        {
+          "id": "t7.m3",
+          "name": "Under load",
+          "tasks": [
+            {
+              "id": "t7.m3.k0",
+              "text": "Redis for something that genuinely benefits from caching"
+            },
+            {
+              "id": "t7.m3.k1",
+              "text": "Load test with vegeta, record before and after"
+            },
+            {
+              "id": "t7.m3.k2",
+              "text": "Add an index because a load test told you to"
+            }
+          ],
+          "deliverable": {
+            "id": "b7",
+            "label": "The service"
+          }
+        }
+      ]
+    },
+    {
+      "id": "t8",
+      "name": "The target",
+      "goal": "Read the service and be able to contribute to it.",
+      "proof": "You can trace any endpoint end to end and open a pull request that would survive review.",
+      "modules": [
+        {
+          "id": "t8.m0",
+          "name": "Orientation",
+          "tasks": [
+            {
+              "id": "t8.m0.k0",
+              "text": "Clone it and get it running locally"
+            },
+            {
+              "id": "t8.m0.k1",
+              "text": "Trace one endpoint from route to database"
+            },
+            {
+              "id": "t8.m0.k2",
+              "text": "List everything unfamiliar, then work through the list"
+            }
+          ]
+        },
+        {
+          "id": "t8.m1",
+          "name": "Deep reading",
+          "tasks": [
+            {
+              "id": "t8.m1.k0",
+              "text": "Map its domain layout against your layer layout"
+            },
+            {
+              "id": "t8.m1.k1",
+              "text": "Read its interfaces and how they're injected at startup"
+            },
+            {
+              "id": "t8.m1.k2",
+              "text": "Find every transaction and say what breaks without it"
+            },
+            {
+              "id": "t8.m1.k3",
+              "text": "Find the Redis usage and explain why it's there"
+            },
+            {
+              "id": "t8.m1.k4",
+              "text": "Read its auth middleware against yours"
+            },
+            {
+              "id": "t8.m1.k5",
+              "text": "Follow its OAuth login including the redirect checks"
+            },
+            {
+              "id": "t8.m1.k6",
+              "text": "Read its CI and deploy config end to end"
+            }
+          ]
+        },
+        {
+          "id": "t8.m2",
+          "name": "Contribution",
+          "tasks": [
+            {
+              "id": "t8.m2.k0",
+              "text": "Read merged PRs to learn what reviewers ask for"
+            },
+            {
+              "id": "t8.m2.k1",
+              "text": "Find a real bug, rough edge, or missing test"
+            },
+            {
+              "id": "t8.m2.k2",
+              "text": "Open a pull request"
+            }
+          ],
+          "deliverable": {
+            "id": "b8",
+            "label": "Merged PR"
+          }
+        }
+      ]
+    }
+  ]
+}

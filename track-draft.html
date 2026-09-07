@@ -1,0 +1,228 @@
+<div id="root"><div class="boot">Loading…</div></div>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+#root{
+--paper:#E9ECF0;--surface:#fff;--ink:#16202C;--muted:#5C6A7A;--faint:#8D99A6;
+--rule:#C9D1DA;--amber:#C77A1E;--amberbg:#F7E9D3;--teal:#2E7D74;--tealbg:#D9E9E6;
+background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',system-ui,sans-serif;
+font-size:15px;line-height:1.55;margin:0;padding:0;}
+#root *,#root *::before,#root *::after{box-sizing:border-box;}
+.boot{font-family:'IBM Plex Mono',monospace;color:var(--muted);padding:60px;text-align:center;font-size:13px;}
+
+.bar{border-bottom:1px solid var(--rule);background:var(--surface);}
+.bar-in{max-width:900px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between;align-items:center;gap:12px;}
+.brand{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;}
+.mode{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);}
+.btn{font:inherit;font-size:13px;background:none;border:1px solid var(--rule);color:var(--muted);padding:5px 12px;cursor:pointer;}
+.btn:hover{border-color:var(--ink);color:var(--ink);}
+.btn.on{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+.wrap{max-width:900px;margin:0 auto;padding:34px 24px 80px;}
+h1{font-family:'IBM Plex Mono',monospace;font-size:25px;font-weight:600;margin:0 0 6px;letter-spacing:-.02em;}
+.sub{color:var(--muted);margin:0 0 26px;max-width:62ch;}
+
+.gauge{background:var(--surface);border:1px solid var(--rule);padding:22px;margin-bottom:12px;}
+.gauge-top{display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:15px;}
+.gauge-l{font-size:14px;color:var(--muted);max-width:44ch;}
+.gauge-n{font-family:'IBM Plex Mono',monospace;font-size:38px;font-weight:600;line-height:1;letter-spacing:-.03em;}
+.gauge-n span{font-size:18px;color:var(--faint);}
+.track{height:9px;background:#DCE2E8;}
+.fill{height:100%;background:var(--amber);width:0;transition:width .7s cubic-bezier(.22,.61,.36,1);}
+.stats{display:flex;gap:22px;margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);flex-wrap:wrap;}
+
+.target{background:var(--surface);border:1px solid var(--rule);border-left:3px solid var(--ink);border-radius:0;padding:16px 20px;margin-bottom:30px;}
+.target h2{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;margin:0 0 6px;}
+.target p{margin:0 0 9px;font-size:14px;color:var(--muted);}
+.specs{display:flex;flex-wrap:wrap;gap:5px;}
+.spec{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:2px 7px;background:var(--paper);border:1px solid var(--rule);color:var(--muted);}
+
+/* tree */
+.tier{border-top:1px solid var(--rule);}
+.tier:last-of-type{border-bottom:1px solid var(--rule);}
+.thead{width:100%;text-align:left;background:none;border:0;font:inherit;color:inherit;cursor:pointer;
+padding:16px 4px;display:flex;gap:14px;align-items:baseline;}
+.thead:hover{background:rgba(0,0,0,.015);}
+.tnum{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--faint);width:20px;flex-shrink:0;}
+.tmain{flex:1;min-width:0;}
+.tname{font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:500;}
+.tgoal{font-size:13px;color:var(--muted);margin-top:2px;}
+.pill{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:2px 7px;border:1px solid var(--rule);background:var(--paper);flex-shrink:0;}
+.pill.done{background:var(--tealbg);border-color:var(--teal);color:var(--teal);}
+.pill.now{background:var(--amberbg);border-color:var(--amber);color:var(--amber);}
+
+.tbody{display:none;padding:0 4px 20px 34px;}
+.tier.open .tbody{display:block;}
+
+.mod{border-left:1px solid var(--rule);padding-left:16px;margin-bottom:16px;}
+.mname{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:5px;}
+
+.task{display:flex;gap:9px;align-items:flex-start;padding:5px 0;}
+.mark{width:13px;height:13px;margin-top:4px;flex-shrink:0;border:1px solid var(--faint);background:var(--surface);}
+.mark.on{background:var(--teal);border-color:var(--teal);}
+.task input{margin:4px 0 0;width:14px;height:14px;flex-shrink:0;accent-color:var(--teal);cursor:pointer;}
+.tlabel{font-size:14px;}
+.task.on .tlabel{color:var(--faint);text-decoration:line-through;}
+.flag{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:1px 5px;background:var(--amberbg);color:var(--amber);border:1px solid var(--amber);margin-left:6px;white-space:nowrap;}
+
+.art{margin:5px 0 10px 23px;border:1px solid var(--rule);background:var(--surface);padding:9px 12px;}
+.art a{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--teal);margin-right:14px;}
+.art .note{font-size:13px;color:var(--muted);margin-top:3px;}
+.art.empty{border-style:dashed;color:var(--faint);font-size:13px;}
+.art input{display:block;width:100%;font:inherit;font-size:13px;padding:5px 7px;border:1px solid var(--rule);margin-bottom:5px;background:var(--paper);}
+
+.proof{margin-top:12px;padding:10px 13px;background:var(--paper);border:1px solid var(--rule);font-size:13px;}
+.proof strong{font-family:'IBM Plex Mono',monospace;font-size:11px;display:block;margin-bottom:2px;}
+
+.foot{margin-top:26px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.panel{background:var(--surface);border:1px solid var(--rule);padding:16px;margin-bottom:20px;}
+.panel input{width:100%;font:inherit;font-size:13px;padding:6px 8px;border:1px solid var(--rule);background:var(--paper);margin:8px 0;}
+@media(max-width:620px){.wrap{padding:22px 14px 60px;}.tbody{padding-left:12px;}.gauge-n{font-size:31px;}}
+</style>
+
+<script>
+const DATA=[
+{n:"Ground floor",g:"Command line, Git, and enough JavaScript to stop guessing.",p:"You can create a repo, make three commits, and push it without looking anything up.",m:[
+ {n:"Environment",t:["Navigate, move and delete files from the terminal","Install Node and run a .js file from the command line"]},
+ {n:"Version control",t:["git init, add, commit, push to a remote you created","Branch, change, merge back"]},
+ {n:"JavaScript",t:["Variables, functions, arrays, objects, loops","map, filter, find, reduce","JSON and how to parse it","Callbacks, promises, async/await"]}]},
+
+{n:"First server",g:"How the web talks, and a server you wrote answering it.",p:"Four endpoints you can hit from the browser and from curl.",m:[
+ {n:"The protocol",t:["GET, POST, PATCH, PUT, DELETE and what each means","Status codes you'll actually use","Headers and bodies — inspect a real request","What stateless means and why it matters"]},
+ {n:"Your first API",t:["Serve GET /hello returning JSON","POST that accepts a body and echoes it","A route with a URL parameter","Correct status codes for bad input"],b:{id:"b1",label:"First server"}}]},
+
+{n:"Typed and structured",g:"TypeScript, and code split into layers instead of one long file.",p:"No route handler longer than fifteen lines.",m:[
+ {n:"TypeScript",t:["Types, interfaces, unions, optional fields","Generics — enough to read them","tsconfig and a working build"]},
+ {n:"Structure",t:["Type every request and response","Split routes, logic, and data access","Validate input and reject it properly","One consistent error shape","Config from environment, never in code"],b:{id:"b2",label:"Typed API"}}]},
+
+{n:"Real data",g:"PostgreSQL, SQL by hand, and schema changes under version control.",p:"Three related tables, a join you wrote unaided, and a balance two requests can't double-spend.",m:[
+ {n:"SQL",t:["Install Postgres and connect with psql","CREATE TABLE with real types and constraints","INSERT, SELECT, UPDATE, DELETE by hand","WHERE, ORDER BY, LIMIT, GROUP BY"]},
+ {n:"Relationships",t:["Foreign keys and one-to-many","Inner and left joins","Indexes and when to add one"]},
+ {n:"Concurrency",t:["Transactions, and rolling back when step two fails","What happens when two requests read the same row","SELECT ... FOR UPDATE and what it costs","Optimistic concurrency with version columns","Isolation levels and when they matter"]},
+ {n:"Schema over time",t:["Migrations in version control","Replace all in-memory data with Postgres"],b:{id:"b3",label:"Schema + API"}}]},
+
+{n:"Who are you",g:"Authentication, authorization, and the gap between them.",p:"Two users log in and neither can touch the other's data.",m:[
+ {n:"Sessions",t:["Hash passwords with bcrypt or argon2","Issue a JWT and verify it","Access tokens vs refresh tokens","Middleware rejecting unauthenticated requests"]},
+ {n:"Permissions",t:["Check the caller owns what they're touching","Roles, and admin-only routes","Break your own auth with someone else's ID"]},
+ {n:"Federated identity",t:["OAuth2 authorization code flow and PKCE","OIDC: ID tokens and how SSO works","Log into a dummy app with a real provider","Redirect allowlisting","Keep tokens server-side, not in the browser"],b:{id:"b4",label:"Auth demo"}}]},
+
+{n:"Shipped, not just running",g:"It runs on someone else's machine, and tests gate the merge.",p:"A stranger clones it, runs one command, and it works.",m:[
+ {n:"Containers",t:["A Dockerfile for your API","compose bringing up API and Postgres","Images vs containers vs volumes"]},
+ {n:"Automation",t:["Tests for your business logic","Actions running lint and tests on push","Deployed at a real URL","A README explaining your decisions"],b:{id:"b5",label:"Deployed service"}}]},
+
+{n:"Go",g:"A second language, chosen because the target is written in it.",p:"You can read unfamiliar Go and say what it does.",m:[
+ {n:"The language",t:["A Tour of Go, all of it","Structs, methods, pointers","Interfaces — implicit, and why that changes design","Errors as values, not exceptions"]},
+ {n:"The toolchain",t:["Goroutines and channels, basics only","Packages, modules, go.mod","Write and run a test","Rewrite /hello in Go"],b:{id:"b6",label:"Go rewrite"}}]},
+
+{n:"A service, properly built",g:"Everything above, in Go, structured the way the target is.",p:"Layered, migrated, containerized, deployed — and your business logic doesn't import your web framework.",m:[
+ {n:"Architecture",t:["Route with Fiber or Gin","handler → usecase → repository, no shortcuts","Each layer's contract as an interface","Ports and adapters: name it, then see it","Constructor injection, never construct inside","cmd/ and internal/ layout"]},
+ {n:"Testing",t:["A mock repository injected into a usecase test","Table-driven tests for business rules","Tests that pass with no database running","Swap one adapter without touching a usecase"]},
+ {n:"Production concerns",t:["An ORM talking to Postgres","Migrations under version control","A multi-step write that can't half-complete","JWT auth with real ownership checks","Structured logging, not fmt.Println","Generated API docs","Dockerfile, compose, CI, deployed"]},
+ {n:"Under load",t:["Redis for something that benefits from caching","Load test with vegeta, record before and after","Add an index because a load test told you to"],b:{id:"b7",label:"The service"}}]},
+
+{n:"The target",g:"Read the service and be able to contribute to it.",p:"You can trace any endpoint end to end and open a PR that survives review.",m:[
+ {n:"Orientation",t:["Clone it and get it running","Trace one endpoint route to database","List everything unfamiliar, then work the list"]},
+ {n:"Deep reading",t:["Map its domain layout against your layer layout","Read its interfaces and how they're injected","Find every transaction and say what breaks without it","Find the Redis usage and explain it","Read its auth middleware against yours","Follow its OAuth login including redirect checks","Read its CI and deploy config"]},
+ {n:"Contribution",t:["Read merged PRs to learn what reviewers ask","Find a real bug, rough edge, or missing test","Open a pull request"],b:{id:"b8",label:"Merged PR"}}]}
+];
+
+const KEY='track-draft-v1';
+let S={done:{},proj:{}}, owner=false;
+
+const tasksOf=i=>DATA[i].m.reduce((a,m)=>a+m.t.length,0);
+const doneOf=i=>DATA[i].m.reduce((a,m,mi)=>a+m.t.filter((_,ti)=>S.done[i+'.'+mi+'.'+ti]).length,0);
+const total=()=>DATA.reduce((a,_,i)=>a+tasksOf(i),0);
+const done=()=>DATA.reduce((a,_,i)=>a+doneOf(i),0);
+const cur=()=>{for(let i=0;i<DATA.length;i++)if(doneOf(i)<tasksOf(i))return i;return DATA.length-1;};
+
+async function save(){try{await window.storage.set(KEY,JSON.stringify(S));}catch(e){console.error(e);}}
+async function load(){try{const r=await window.storage.get(KEY);if(r&&r.value)S=JSON.parse(r.value);}catch(e){}}
+
+function esc(s){return String(s).replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));}
+
+function artifact(b,open){
+  const p=S.proj[b.id];
+  if(owner&&open){
+    return `<div class="art">
+      <input data-p="${b.id}" data-f="repo" placeholder="repository url" value="${p?esc(p.repo||''):''}">
+      <input data-p="${b.id}" data-f="live" placeholder="live url (optional)" value="${p?esc(p.live||''):''}">
+      <input data-p="${b.id}" data-f="note" placeholder="one line on what you built" value="${p?esc(p.note||''):''}">
+    </div>`;
+  }
+  if(!p||!p.repo)return `<div class="art empty">No project linked yet.</div>`;
+  return `<div class="art">
+    <a href="${esc(p.repo)}">repository</a>
+    ${p.live?`<a href="${esc(p.live)}">live</a>`:''}
+    ${p.note?`<div class="note">${esc(p.note)}</div>`:''}</div>`;
+}
+
+function render(){
+  const d=done(),t=total(),pct=Math.round(d/t*100),c=cur();
+  document.getElementById('root').innerHTML=`
+  <div class="bar"><div class="bar-in">
+    <span class="brand">backend track</span>
+    <span style="flex:1"></span>
+    <span class="mode">${owner?'owner':'public view'}</span>
+    <button class="btn ${owner?'on':''}" id="auth">${owner?'Sign out':'Sign in'}</button>
+  </div></div>
+  <div class="wrap">
+    <h1>Backend track</h1>
+    <p class="sub">Zero to contributing on a production Go service. Nine tiers, in order — each assumes the last is finished. Public and read-only; only I can update it.</p>
+
+    ${owner?`<div class="panel"><strong style="font-size:13px">Draft note</strong>
+      <p style="margin:6px 0 0;font-size:13px;color:var(--muted)">In the real build this is a GitHub token, and saving commits progress.json to the repo. Here it just unlocks editing locally.</p></div>`:''}
+
+    <div class="gauge">
+      <div class="gauge-top">
+        <div class="gauge-l">Readiness for the target service, across every skill it uses.</div>
+        <div class="gauge-n">${pct}<span>%</span></div>
+      </div>
+      <div class="track"><div class="fill" id="fill"></div></div>
+      <div class="stats"><span>${d} of ${t} tasks</span><span>tier ${c} in progress</span><span>${DATA.length-1-c} tiers remaining</span></div>
+    </div>
+
+    <div class="target"><h2>What this is aimed at</h2>
+      <p>A live Go API of roughly 7,700 lines across 60 files, organised by domain, built by a team. Nothing here is filler — every tier maps to something that service does.</p>
+      <div class="specs">${['Go','Fiber','GORM','PostgreSQL','Redis','JWT','Structured logging','Swagger','Docker','CI'].map(s=>`<span class="spec">${s}</span>`).join('')}</div>
+    </div>
+
+    ${DATA.map((T,i)=>{
+      const dn=doneOf(i),tt=tasksOf(i),full=dn===tt,now=i===c,open=i===c;
+      return `<div class="tier ${open?'open':''}" data-t="${i}">
+        <button class="thead" data-x="${i}">
+          <span class="tnum">${i}</span>
+          <span class="tmain"><span class="tname">${T.n}</span><div class="tgoal">${T.g}</div></span>
+          <span class="pill ${full?'done':now?'now':''}">${dn}/${tt}</span>
+        </button>
+        <div class="tbody">
+          ${T.m.map((M,mi)=>`<div class="mod"><div class="mname">${M.n}</div>
+            ${M.t.map((task,ti)=>{const k=i+'.'+mi+'.'+ti,on=!!S.done[k];
+              return `<div class="task ${on?'on':''}">
+                ${owner?`<input type="checkbox" data-k="${k}" ${on?'checked':''}>`:`<span class="mark ${on?'on':''}"></span>`}
+                <span class="tlabel">${task}</span></div>`;}).join('')}
+            ${M.b?`<div class="task"><span style="width:13px"></span><span class="tlabel"><strong>Deliverable</strong><span class="flag">${M.b.label}</span></span></div>${artifact(M.b,true)}`:''}
+          </div>`).join('')}
+          <div class="proof"><strong>Done when</strong>${T.p}</div>
+        </div></div>`;}).join('')}
+
+    <div class="foot"><span>source on GitHub</span><span>draft</span></div>
+  </div>`;
+
+  requestAnimationFrame(()=>{const f=document.getElementById('fill');if(f)f.style.width=pct+'%';});
+
+  const R=document.getElementById('root');
+  R.querySelector('#auth').onclick=()=>{owner=!owner;render();};
+  R.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{
+    const t=b.closest('.tier');t.classList.toggle('open');});
+  R.querySelectorAll('input[data-k]').forEach(cb=>cb.onchange=async()=>{
+    const open=[...R.querySelectorAll('.tier.open')].map(x=>x.dataset.t);
+    if(cb.checked)S.done[cb.dataset.k]=true;else delete S.done[cb.dataset.k];
+    await save();render();
+    open.forEach(i=>{const el=R.querySelector(`.tier[data-t="${i}"]`);if(el)el.classList.add('open');});});
+  R.querySelectorAll('input[data-p]').forEach(inp=>inp.onchange=async()=>{
+    const id=inp.dataset.p;S.proj[id]=S.proj[id]||{};S.proj[id][inp.dataset.f]=inp.value.trim();await save();});
+}
+
+(async()=>{await load();render();})();
+</script>
