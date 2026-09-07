@@ -71,12 +71,16 @@ padding:16px 4px;display:flex;gap:14px;align-items:baseline}
 .mod{border-left:1px solid var(--rule);padding-left:16px;margin-bottom:16px}
 .mname{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:5px}
 
-.task{display:flex;gap:9px;align-items:flex-start;padding:5px 0}
+.task{display:flex;gap:9px;align-items:flex-start;padding:5px 0;flex-wrap:wrap}
 .mark{width:13px;height:13px;margin-top:4px;flex-shrink:0;border:1px solid var(--faint);background:var(--surface)}
 .mark.on{background:var(--teal);border-color:var(--teal)}
 .task input[type=checkbox]{margin:4px 0 0;width:14px;height:14px;flex-shrink:0;accent-color:var(--teal);cursor:pointer}
 .tlabel{font-size:14px}
 .task.on .tlabel{color:var(--faint);text-decoration:line-through}
+.tickdate{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);margin-top:4px;display:inline-flex;align-items:center;gap:4px}
+.editdate{background:none;border:0;padding:1px 2px;color:var(--faint);cursor:pointer;font-size:12px;line-height:1}
+.editdate:hover{color:var(--ink)}
+.dateedit{font:inherit;font-size:11px;padding:1px 4px;border:1px solid var(--rule);background:var(--paper);border-radius:0;font-family:'IBM Plex Mono',monospace}
 .dl{margin-top:9px;font-size:14px}
 .flag{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:1px 5px;background:var(--amberbg);color:var(--amber);border:1px solid var(--amber);margin-left:6px;white-space:nowrap}
 
@@ -133,6 +137,24 @@ let token = null;
 let dirty = false;
 let openTiers = new Set();
 let dialog = false, dialogErr = "";
+let editingDate = null;    // id of task whose tick-date is being edited
+
+/* date helpers */
+function todayISO(){
+  const d = new Date(), p = n => String(n).padStart(2, "0");
+  return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+}
+function ordinal(n){
+  const s = ["th","st","nd","rd"], v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+function fmtDate(iso){
+  if (typeof iso !== "string") return "";
+  const d = new Date(iso + "T00:00:00");
+  if (isNaN(d)) return "";
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return ordinal(d.getDate()) + " " + months[d.getMonth()] + " " + d.getFullYear();
+}
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[<>&"]/g, c => ({ "<":"&lt;", ">":"&gt;", "&":"&amp;", '"':"&quot;" }[c]));
@@ -304,12 +326,21 @@ function render(){
         T.modules.map(M =>
           '<div class="mod"><div class="mname">' + esc(M.name) + "</div>" +
           M.tasks.map(k => {
-            const on = !!ST.done[k.id];
+            const val = ST.done[k.id], on = !!val;
+            const dateStr = fmtDate(val);
+            const editing = editingDate === k.id;
             return '<div class="task' + (on ? " on" : "") + '">' +
               (token ? '<input type="checkbox" id="' + k.id + '" data-k="' + k.id + '"' + (on ? " checked" : "") + ">"
                      : '<span class="mark' + (on ? " on" : "") + '"></span>') +
               (token ? '<label class="tlabel" for="' + k.id + '">' : '<span class="tlabel">') +
-              esc(k.text) + (token ? "</label>" : "</span>") + "</div>";
+              esc(k.text) + (token ? "</label>" : "</span>") +
+              (on ? (editing
+                ? '<span class="tickdate"><input type="date" class="dateedit" data-de="' + k.id + '" value="' + esc(typeof val === "string" ? val : todayISO()) + '"></span>'
+                : '<span class="tickdate">' + (dateStr || "date unknown") +
+                  (token ? ' <button type="button" class="editdate" data-ed="' + k.id + '" title="Edit date" aria-label="Edit date">✎</button>' : "") +
+                  "</span>")
+                : "") +
+              "</div>";
           }).join("") +
           (M.deliverable
             ? '<div class="dl"><strong>Deliverable</strong><span class="flag">' + esc(M.deliverable.label) + "</span></div>" + artifact(M.deliverable)
@@ -356,8 +387,23 @@ function wire(){
   });
 
   app.querySelectorAll("input[data-k]").forEach(cb => cb.onchange = () => {
-    if (cb.checked) ST.done[cb.dataset.k] = true; else delete ST.done[cb.dataset.k];
-    dirty = true; render();
+    if (cb.checked) ST.done[cb.dataset.k] = todayISO(); else delete ST.done[cb.dataset.k];
+    editingDate = null; dirty = true; render();
+  });
+
+  app.querySelectorAll("[data-ed]").forEach(b => b.onclick = () => {
+    editingDate = b.dataset.ed; render();
+    const inp = $('input[data-de="' + editingDate + '"]'); if (inp) inp.focus();
+  });
+
+  app.querySelectorAll("input[data-de]").forEach(inp => {
+    const commit = () => {
+      if (inp.value) ST.done[inp.dataset.de] = inp.value;
+      editingDate = null; dirty = true; render();
+    };
+    inp.onchange = commit;
+    inp.onblur = commit;
+    inp.onkeydown = e => { if (e.key === "Escape") { editingDate = null; render(); } };
   });
 
   app.querySelectorAll("input[data-p]").forEach(inp => inp.oninput = () => {
